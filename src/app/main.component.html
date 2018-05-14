@@ -1,0 +1,93 @@
+<div *ngIf="!orderConfirmation">
+
+  <h4>Choose a customer</h4>
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Search for a customer:</span>
+    </div>
+    <input id="choosecustomer" type="text"
+      [(ngModel)]="selectedCustomer" 
+      [ngbTypeahead]="searchCustomers" 
+      [resultFormatter]="getCustomerName" 
+      [inputFormatter]="getCustomerName">
+    <div class="input-group-append">
+      <span class="input-group-text"> or select:</span>
+    </div>
+    <select [(ngModel)]="selectedCustomer" (change)="selectCustomer()">
+      <option *ngFor="let customer of customers" [ngValue]="customer">
+        {{customer.lastName}}, {{customer.firstName}}
+      </option>
+    </select>
+  </div>
+
+  <h4>Search for an event</h4>
+
+  <h4>Select a venue</h4>
+  <div class="btn-group-toggle" ngbRadioGroup [(ngModel)]="selectedVenue">
+    <label ngbButtonLabel class="btn-primary"  *ngFor="let venue of venues" (click)="selectVenue(venue)">
+      <input class="btn" ngbButton type="radio" [value]="venue">
+      {{venue.name}}
+    </label>
+  </div>
+
+
+
+  <div *ngIf="selectedVenue">
+    <h3>Select an event</h3>
+    <div class="btn-group-toggle" ngbRadioGroup [(ngModel)]="selectedShow">
+      <label ngbButtonLabel class="btn-primary"  *ngFor="let show of selectedVenue.shows" (click)="selectShow(venue)">
+        <input class="btn" ngbButton type="radio" [value]="show">
+        {{show.name}}
+      </label>
+    </div>
+  </div>
+
+  <div *ngIf="selectedShow">
+    <h3>Select a performance</h3>
+    <div class="btn-group-toggle" ngbRadioGroup [(ngModel)]="selectedPerformance">
+      <label ngbButtonLabel class="btn-primary"  *ngFor="let event of selectedShow.performances" (click)="selectPerformance(event)">
+        <input class="btn" ngbButton type="radio" [value]="show">
+        {{event.showTime | amDateFormat:'LL'}} -- {{event.seatsAvailable}} seats left
+      </label>
+    </div>
+  </div>
+
+  <div *ngIf="levelOptions">
+    <h3>Select your seats</h3>
+    <div class="btn-group btn-group-toggle">
+      <div class="btn" *ngFor="let level of levelOptions">
+        <label class="btn-primary" ngbButtonLabel>
+          <input type="checkbox" ngbButton (click)="selectLevel(level)">
+          {{level.name}} -- {{level.seatsAvailable}} seats left
+        </label>
+        <span *ngIf=level.selected>
+          Choose number of seats: <input type="number" min="1" max="{{level.seatsAvailable}}" [(ngModel)]="level.numOfSeats">
+        </span>
+      </div>
+    </div>
+    <button class="btn-primary" (click)="reserve()">Reserve These Seats</button>
+  </div>
+</div>
+
+
+<div *ngIf="orderConfirmation">
+  <a (click)="clearOrder()">back</a>
+  <h3>Customer</h3>
+  {{orderConfirmation.customer.firstName}} {{orderConfirmation.customer.lastName}} -- {{orderConfirmation.customer.email}}
+  {{orderConfirmation.customer.address}}
+
+  <h3>Venue</h3>
+  <b>{{selectedVenue.name}}</b>
+  <div>Address: {{selectedVenue.address}}</div> 
+  <div>Performance: {{selectedShow.name}}</div>
+  <div>Show Time: {{selectedPerformance.showTime}}</div>
+  <h3>Seats Ordered</h3>
+  <ul>
+    <li *ngFor="let seat of orderConfirmation.seats">
+      {{seat.level.name}} -- row: {{seat.row}} seat: #{{seat.seatNumber}} (${{seat.level.price}})
+    </li>
+  </ul>
+
+  <div><b>Total: ${{getTotal()}}</b></div>
+  <button (click)="confirmSeats()">Confirm These Seats</button>
+</div>
