@@ -13,6 +13,7 @@ import { AppRoutingModule }     from './app-routing.module';
 import { AppComponent }         from './app.component';
 import { DashboardComponent }   from './dashboard/dashboard.component';
 import { MainComponent }      from './main.component';
+import { SearchPerformancesComponent } from './search-performances.component';
 
 @NgModule({
   imports: [
@@ -32,6 +33,7 @@ import { MainComponent }      from './main.component';
   ],
   declarations: [
     AppComponent,
+    SearchPerformancesComponent,
     DashboardComponent,
     MainComponent
   ],

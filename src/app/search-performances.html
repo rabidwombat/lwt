@@ -1,0 +1,11 @@
+<h4>Search for a show</h4>
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text">Search for a show:</span>
+  </div>
+  <input id="chooseshow" type="text"
+    (selectItem)="selectSearchedShow($event)" 
+    [ngbTypeahead]="searchShows" 
+    [resultFormatter]="getShowName" 
+    [inputFormatter]="getShowName">
+</div>

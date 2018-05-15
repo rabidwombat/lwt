@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
-import { Venue } from './venue';
-import { Customer } from './customer';
+import { Venue } from './dataTypes/venue';
+import { Customer } from './dataTypes/customer';
+import { SearchPerformancesComponent } from './search-performances.component';
 import { TicketService } from './ticket.service';
 
 @Component({
@@ -31,14 +32,6 @@ export class MainComponent implements OnInit {
         : this.customers.filter(v => v.firstName.concat(v.lastName).toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
     );
 
-  searchShows = (text$: Observable<string>) =>
-    text$.pipe(
-      debounceTime(200),
-      distinctUntilChanged(),
-      map(term => term.length < 2 ? []
-        : this.shows.filter(v => v.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
-    );
-
   constructor(private ticketService: TicketService) { }
 
   ngOnInit() {
@@ -62,30 +55,23 @@ export class MainComponent implements OnInit {
     return customer.firstName + ' ' + customer.lastName;
   }
 
-  getShowName(show: any): string {
-    return show.name;
-  }
-
-  selectVenue(venue: Venue): void {
+  setVenue(venue: Venue): void {
     this.selectedVenue = venue;
     this.clearShow();
   }
 
-  selectShow(show: any): void {
+  setShow(show: any): void {
     this.selectedShow = show;
     this.clearPerformance();
-  }
-
-  selectSearchedShow(selectEvent: any): void {
-    let show = selectEvent.item;
-    this.selectedVenue = show.venue;
-    this.selectedShow = show;
   }
 
   clearSearchedShow(): void {
     this.clearVenue();
   }
 
+  thisthing() {
+    console.log('called thisthing');
+  }
   selectPerformance(performance: any): void {
     this.selectedPerformance = performance;
     let levels = [];
@@ -166,7 +152,11 @@ export class MainComponent implements OnInit {
   }
 
   confirmSeats(): void {
-    this.ticketService.confirmSeats(this.selectedVenue.id, this.selectedShow.id, this.selectedPerformance.id, this.orderConfirmation.reservationNumber)
-      .subscribe(result => console.log(result));
+    this.ticketService.confirmSeats(this.selectedVenue.id, this.selectedShow.id, this.selectedPerformance.id, this.orderConfirmation.id)
+      .subscribe(result => this.confirmed());
+  }
+  
+  confirmed(): void {
+    alert ('Thank you for your order, it has now been confirmed.  Please print out this alert message for your records.');
   }
 }
