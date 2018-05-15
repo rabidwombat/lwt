@@ -22,12 +22,21 @@ export class MainComponent implements OnInit {
   levelOptions: any;
   numOfSeats: number;
   orderConfirmation: any;
+  shows: any;
   searchCustomers = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(200),
       distinctUntilChanged(),
       map(term => term.length < 2 ? []
         : this.customers.filter(v => v.firstName.concat(v.lastName).toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
+    );
+
+  searchShows = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      map(term => term.length < 2 ? []
+        : this.shows.filter(v => v.name.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
     );
 
   constructor(private ticketService: TicketService) { }
@@ -39,7 +48,9 @@ export class MainComponent implements OnInit {
 
   getVenues(): void {
     this.ticketService.getVenues()
-    .subscribe(venues => { this.venues = venues; console.log(venues); });
+    .subscribe(
+      venues => { this.venues = venues; this.shows = []; venues.forEach(venue => { venue.shows.forEach(show => { show.venue = venue; this.shows.push(show); }) }) }
+    );
   }
 
   getCustomers(): void {
@@ -51,19 +62,28 @@ export class MainComponent implements OnInit {
     return customer.firstName + ' ' + customer.lastName;
   }
 
-  selectCustomer():void {
-    console.log('selected ' + this.selectedCustomer.lastName);
+  getShowName(show: any): string {
+    return show.name;
   }
 
   selectVenue(venue: Venue): void {
     this.selectedVenue = venue;
     this.clearShow();
-    console.log('selected ' + venue.name);
   }
 
   selectShow(show: any): void {
     this.selectedShow = show;
     this.clearPerformance();
+  }
+
+  selectSearchedShow(selectEvent: any): void {
+    let show = selectEvent.item;
+    this.selectedVenue = show.venue;
+    this.selectedShow = show;
+  }
+
+  clearSearchedShow(): void {
+    this.clearVenue();
   }
 
   selectPerformance(performance: any): void {
@@ -112,6 +132,18 @@ export class MainComponent implements OnInit {
   clearOrder(): void {
     this.orderConfirmation = null;
   };
+
+  canReserve(): boolean {
+    return this.showErrors() == "";
+  };
+
+  showErrors(): string {
+    if (!this.selectedCustomer) return "A customer must be selected.";
+    let hasSeats = false;
+    this.levelOptions.forEach(level => {if (level.selected && level.seatsAvailable > 0) { hasSeats = true}});
+    if (!hasSeats) return "One or more seats must be selected.";
+    return "";
+  }
 
   reserve(): void {
     let seatRequests = [];
