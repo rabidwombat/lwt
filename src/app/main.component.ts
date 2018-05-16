@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 import { Venue } from './dataTypes/venue';
+import { Show } from './dataTypes/show';
 import { Customer } from './dataTypes/customer';
 import { SearchPerformancesComponent } from './search-performances.component';
 import { TicketService } from './ticket.service';
@@ -17,7 +18,7 @@ export class MainComponent implements OnInit {
   customers: Customer[];
   selectedCustomer: Customer;
   selectedVenue: Venue;
-  selectedShow: any;
+  selectedShow: Show;
   selectedPerformance: any;
   selectedLevels: any;
   levelOptions: any;

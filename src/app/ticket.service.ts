@@ -56,7 +56,7 @@ export class TicketService {
   }
 
   confirmSeats(venueId:number, showId:number, performanceId:number, reservationId: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/venues/${venueId}/shows/${showId}/performances/${performanceId}/reservations/${reservationId}/confirm`);
+    return this.http.post(`${this.baseUrl}/venues/${venueId}/shows/${showId}/performances/${performanceId}/reservations/${reservationId}/confirm`, {});
   }
 
   private handleError<T> (operation = 'operation', result?: T) {
@@ -73,7 +73,7 @@ export class TicketService {
     };
   }
 
-  private log(message: string) {
+  private log(message: any) {
     console.log('TicketService: ' + message);
   }
 }

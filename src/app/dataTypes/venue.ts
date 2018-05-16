@@ -1,3 +1,4 @@
+import { Show } from './show';
 export class Venue {
   id: number;
   name: string;
@@ -5,5 +6,5 @@ export class Venue {
   address: string;
   url: string;
   levels: any[];
-  shows: any[];
+  shows: Show[];
 }
